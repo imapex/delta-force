@@ -1,0 +1,74 @@
+
+#content {
+    resize: both;
+    overflow: auto;
+}
+/*table.diff {*/
+    /*font-size:85%;*/
+    /*line-height: 110%;*/
+    /*width:99%;*/
+    /*padding:0.5%;*/
+    /*border:medium;*/
+/*}*/
+/*.diff_header {*/
+    /*background-color:#e0e0e0}*/
+/*td.diff_header {*/
+    /*text-align:right*/
+/*}*/
+/*.diff_next {*/
+    /*background-color:#c0c0c0;*/
+/*}*/
+/*.diff_add {*/
+    /*background-color:#aaffaa;*/
+/*}*/
+/*.diff_chg {*/
+    /*background-color:#ffff77;*/
+/*}*/
+/*.diff_sub {*/
+    /*background-color:#ffaaaa;*/
+/*}*/
+
+
+h1 {
+    text-align: center;
+}
+.container {
+    width: 1170px;
+    margin-left: auto;
+    margin-right: auto;
+}
+table {
+    font-family:monospace, "Courier New", Courier;
+    border-collapse: collapse;
+    border: 1px solid gray;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 20px;
+}
+table th {
+    background-color: #e0e0e0;
+    border: 1px solid gray;
+}
+table td {
+    font-size: 10px;
+}
+/* For diff table */
+.diff_header {
+    background-color:#e0e0e0;
+}
+td.diff_header {
+    text-align:right;
+}
+.diff_next {
+    background-color:#c0c0c0;
+}
+.diff_add {
+    background-color:#aaffaa;
+}
+.diff_chg {
+    background-color:#ffff77;
+}
+.diff_sub {
+    background-color:#ffaaaa;
+}
