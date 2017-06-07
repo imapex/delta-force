@@ -14,9 +14,10 @@ def disable_paging(channel):
 
 def run_commands(host_list, user, pw, commands, device_type="cisco_nxos"):
     """
-    Executes a list of commands on a switch
+    Executes a list of commands on a list of switche
 
     This adds some context information (ip/command) as well as basic XML tags used for sorting results later
+
     :param host_list: list of IP/hostnames
     :param user: username to login to the switch
     :param pw:  password to login to the switch
@@ -36,13 +37,13 @@ def run_commands(host_list, user, pw, commands, device_type="cisco_nxos"):
         session = ConnectHandler(**device)
         output += '<device host="{}">\n'.format(host.strip())
         output += "{}\n".format(host.strip())
-        output += "{}\n".format("=" * 120)
+        output += "{}\n".format("=" * 80)
         output += "\n"
 
         for command in commands:
             output += '<command cmd="{}">\n'.format(command.strip())
             output += "{}:{}\n".format(host.strip(), command)
-            output += "{}".format('-' * 120)
+            output += "{}\n".format('-' * 80)
             output += session.send_command(command)
             output += "\n</command>\n"
         output += "\n</device>\n"

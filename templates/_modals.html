@@ -1,0 +1,43 @@
+    <!--modal displayed while collecting output from devices-->
+    <div class="modal fade bs-example-modal-sm" id="myPleaseWait" tabindex="-1"
+         role="dialog" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        Please Wait while output is collected
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped active"
+                             style="width: 100%">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--modal for collecting user credentials-->
+    <div class="modal fade bs-example-modal-sm" id="credentials" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        Please Enter your device credentials
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="wrapper">
+                        <form action="/cr/{{change.cr}}/snap" class="form-signin" method="post">
+                            <h5 class="form-signin-heading">we will never store your credentials</h5>
+                            <input type="text" class="form-control" name="username" placeholder="username" required="" autofocus="" />
+                            <input type="password" class="form-control" name="password" placeholder="password" required=""/>
+                            <button class="btn btn-lg btn-primary btn-block" onclick="submitCreds()">Login</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+

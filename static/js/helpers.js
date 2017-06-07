@@ -3,19 +3,18 @@
  */
 
 function showProgress(form, url) {
-    console.log('showing progress')
+    // displays progress bar until page reloads
     $('#myPleaseWait').modal('show')
-    //form.submit()
+
 }
 function showmodal(url) {
-    // Show modal, then submit form
+    // Show modal for gathering credentials
     $('#credentials').modal('show');
 
 }
 
 function submitCreds(url) {
-    console.log('submitting creds')
-    console.log(url)
+    // called when credentials form is submitted
     var form = $(this)
     form.submit()
     $('#credentials').modal('hide')
@@ -23,7 +22,9 @@ function submitCreds(url) {
 
 }
 
+// prompt for confirmation when deleting a delta
 function deleteCR(url) {
+
     if(confirm("Are you sure?")) {
         $.ajax({
             url: url,

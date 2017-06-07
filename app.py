@@ -53,12 +53,12 @@ def index():
     return render_template('index.html', change_records=change_records, form=form, logo=logo())
 
 
-@app.route('/cr/<string:id>', methods=["GET", "DELETE"])
-def detail(id):
+@app.route('/cr/<string:snapid>', methods=["GET", "DELETE"])
+def detail(snapid):
     show_command = request.args.get("show_command", None)
     show_device = request.args.get("show_device", None)
     print show_command, show_device
-    obj = Change.query.get_or_404(id)
+    obj = Change.query.get_or_404(snapid)
 
     if request.method == "DELETE":
         db.session.delete(obj)
@@ -83,7 +83,8 @@ def detail(id):
 
     except etree.XMLSyntaxError as e:
         before_xml, after_xml = None, None
-        flash("Could not detect valid XML.  This is likely because you haven't taken a full snapshot yet Details: {}".format(e), category="alert-warning")
+        flash("Could not detect valid XML.  This is likely because you haven't "
+              "taken a full snapshot yet Details: {}".format(e), category="alert-warning")
 
     if before_xml and after_xml is not None:
         # if we are able to xml'ize the outputs, we can present an advanced view,
@@ -106,8 +107,8 @@ def detail(id):
                            logo=logo())
 
 
-@app.route('/cr/<string:id>/<string:snap>', methods=["POST"])
-def capture_output(id, snap):
+@app.route('/cr/<string:snapid>/<string:snap>', methods=["POST"])
+def capture_output(snapid, snap):
     """
      Capture the registered show commands for a CR
     :param id: CR number
@@ -117,7 +118,7 @@ def capture_output(id, snap):
     # All posts should come to snap, if a before snap already exists, we will assume it's after
     if snap not in ['snap']:
         return Response(status=404)
-    obj = Change.query.get_or_404(id)
+    obj = Change.query.get_or_404(snapid)
 
     # baseline exists if more than the default string is set...
     if len(obj.before) > 120:
