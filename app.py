@@ -1,11 +1,12 @@
 import os
 from flask import Flask, render_template, request, flash, redirect, Response
-# from difflib import HtmlDiff
-from utils import HtmlDiffer
+from utils.differs import HtmlDiffer
+from utils.tables import get_command_table, get_device_table
 from flask_sqlalchemy import SQLAlchemy
-from wtforms_alchemy import ModelForm
 from lxml import etree
-from commands import run_commands
+from utils.collectors import run_commands
+import forms
+
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
@@ -14,6 +15,10 @@ db = SQLAlchemy(app)
 
 
 def logo():
+    """
+    change this to use your own logo
+    :return:
+    """
     return "/static/img/deltaforce.png"
 
 
@@ -35,16 +40,9 @@ class Change(db.Model):
         return "<CR {}>".format(self.cr)
 
 
-class ChangeForm(ModelForm):
-    class Meta:
-        include = ['cr', 'verified_hosts', 'verification_commands']
-        exclude = ['before', 'after']
-        model = Change
-
-
 @app.route('/', methods=["GET", "POST"])
 def index():
-    form = ChangeForm(request.form)
+    form = forms.ChangeForm(request.form)
     change_records = Change.query.all()
     if form.validate() and request.method == "POST":
         cr = Change(form.cr.data, form.verification_commands.data, form.verified_hosts.data)
@@ -52,7 +50,6 @@ def index():
         db.session.commit()
         change_records = Change.query.all()
         return render_template('index.html', change_records=change_records, form=form, logo=logo())
-
     return render_template('index.html', change_records=change_records, form=form, logo=logo())
 
 
@@ -68,6 +65,16 @@ def detail(id):
         db.session.commit()
         return Response(status=200)
 
+    # common properties across standard/advanced views
+    change_records = Change.query.all()
+    before_lines = obj.before.split('\n')
+    before_collected = len(before_lines) > 2
+    after_lines = obj.after.split('\n')
+    commands = [command for command in obj.verification_commands.split('\n') if command.strip() != '']
+    hosts = [host for host in obj.verified_hosts.split('\n') if host.strip() != '']
+    diff = HtmlDiffer(wrapcolumn=120)
+    table = diff.make_table(before_lines, after_lines)
+    template_name = 'diffview.html'
 
     # if we can load up valid xml, we'll give a better UI
     try:
@@ -78,45 +85,25 @@ def detail(id):
         before_xml, after_xml = None, None
         flash("Could not detect valid XML.  This is likely because you haven't taken a full snapshot yet Details: {}".format(e), category="alert-warning")
 
-    change_records = Change.query.all()
-    before_lines = obj.before.split('\n')
-    before_collected = len(before_lines) > 2
-    after_lines = obj.after.split('\n')
-    commands = [command for command in obj.verification_commands.split('\n') if command.strip() != '']
-    hosts = [host for host in obj.verified_hosts.split('\n') if host.strip() != '']
-    diff = HtmlDiffer(wrapcolumn=120)
-    table = diff.make_table(before_lines, after_lines)
-
     if before_xml and after_xml is not None:
-        # Generate advanced view
-
+        # if we are able to xml'ize the outputs, we can present an advanced view,
+        # which allows filtering of devices/commands
+        template_name = 'diffview-sortable.html'
+        # Generate table of only the specified commands across all devices
         if show_command is not None:
-            xpath_query = "//command[@cmd='{} ']/text()".format(show_command)
-            print xpath_query
-            before_command_lines = before_xml.xpath(xpath_query)[0].split('\n')
-            after_command_lines = after_xml.xpath(xpath_query)[0].split('\n')
-            print before_command_lines, after_command_lines
-            table = diff.make_table(before_command_lines, after_command_lines)
+            table = get_command_table(before_xml, after_xml, show_command)
+        # Generate table of only the specified device differences
+        if show_device is not None:
+            table = get_device_table(before_xml, after_xml, show_device)
 
-        return render_template('advanced.html',
-                               hosts=hosts,
-                               change_records=change_records,
-                               commands=commands,
-                               before_collected=before_collected,
-                               change=obj,
-                               table=table,
-                               logo=logo())
-
-    else:
-        # Return standard view
-        return render_template('detail.html',
-                               hosts=hosts,
-                               change_records=change_records,
-                               commands=commands,
-                               before_collected=before_collected,
-                               change=obj,
-                               table=table,
-                               logo=logo())
+    return render_template(template_name,
+                           hosts=hosts,
+                           change_records=change_records,
+                           commands=commands,
+                           before_collected=before_collected,
+                           change=obj,
+                           table=table,
+                           logo=logo())
 
 
 @app.route('/cr/<string:id>/<string:snap>', methods=["POST"])
@@ -128,7 +115,6 @@ def capture_output(id, snap):
     :return:
     """
     # All posts should come to snap, if a before snap already exists, we will assume it's after
-
     if snap not in ['snap']:
         return Response(status=404)
     obj = Change.query.get_or_404(id)
@@ -148,13 +134,13 @@ def capture_output(id, snap):
 
     try:
         output = run_commands(host_list, user, pw, command_list)
-
         setattr(obj, snap_type, output)
-
         db.session.commit()
         flash('Successfully Gathered {} Commands'.format(snap_type), category="alert-success")
+
     except Exception as e:
         flash('Error gathering commands.. {}'.format(e), category="alert-danger")
+
     return redirect('/cr/{}'.format(obj.cr))
 
 

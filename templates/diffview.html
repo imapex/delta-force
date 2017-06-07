@@ -10,7 +10,7 @@
 
 {% block mainbody %}
 <div class="container-fluid">
-
+    <!--modal displayed while collecting output from devices-->
     <div class="modal fade bs-example-modal-sm" id="myPleaseWait" tabindex="-1"
          role="dialog" aria-hidden="true" data-backdrop="static">
         <div class="modal-dialog modal-sm">
@@ -31,7 +31,7 @@
             </div>
         </div>
     </div>
-
+    <!--modal for collecting user credentials-->
     <div class="modal fade bs-example-modal-sm" id="credentials" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
         <div class="modal-dialog modal-md">
             <div class="modal-content">
@@ -39,7 +39,6 @@
                     <h4 class="modal-title">
                         Please Enter your device credentials
                     </h4>
-
                 </div>
                 <div class="modal-body">
                     <div class="wrapper">
@@ -55,8 +54,7 @@
         </div>
     </div>
 
-
-
+    <!--main panel-->
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12">
@@ -68,7 +66,7 @@
                 The following devices will be checked:
                 <ul class="list-group">
                     {% for host in hosts %}
-                    <li class="list-group-item"><a href="/#">{{ host }}</a></li>
+                    <li class="list-group-item">{{ host }}</li>
                     {% endfor %}
                 </ul>
             </div>
@@ -76,7 +74,7 @@
                 The following commands will be captured:
                 <ul class="list-group">
                     {% for command in commands %}
-                    <li class="list-group-item"><a href="/#">{{ command }}</a></li>
+                    <li class="list-group-item">{{ command }}</li>
                     {% endfor %}
                 </ul>
 
@@ -106,7 +104,6 @@
 
         </div>
     </div>
-
     <div class="row">
 
         {{ table|safe }}
