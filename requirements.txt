@@ -22,7 +22,7 @@ pycparser==2.17
 PyYAML==4.2b1
 scp==0.10.2
 six==1.10.0
-SQLAlchemy==1.1.10
+SQLAlchemy==1.3.0
 SQLAlchemy-Utils==0.32.14
 validators==0.12.0
 Werkzeug==0.12.2
