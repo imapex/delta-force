@@ -13,7 +13,7 @@ intervals==0.8.0
 ipaddress==1.0.18
 itsdangerous==0.24
 Jinja2==2.10.1
-lxml==3.8.0
+lxml==4.9.1
 MarkupSafe==1.0
 netmiko==1.4.1
 paramiko==2.1.6
